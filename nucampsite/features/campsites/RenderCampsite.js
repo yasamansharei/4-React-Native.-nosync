@@ -1,66 +1,49 @@
-import { useState } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
-import RenderCampsite from '../features/campsites/RenderCampsite';
-import { COMMENTS } from '../shared/comments';
+import { StyleSheet, Text, View } from 'react-native';
+import { Card, Icon } from 'react-native-elements';
 
-const CampsiteInfoScreen = ({ route }) => {
-    const { campsite } = route.params;
-
-    const [comments, setComments] = useState(COMMENTS);
-    const [favorite, setFavorite] = useState(false);
-
-    const renderCommentItem = ({ item }) => {
+const RenderCampsite = (props) => {
+    const { campsite } = props;
+    if (campsite) {
         return (
-            <View style={styles.commentItem}>
-                <Text style={{ fontSize: 14 }}>{item.text}</Text>
-                <Text style={{ fontSize: 12 }}>{item.rating} Stars</Text>
-                <Text style={{ fontSize: 12 }}>
-                    {`-- ${item.author}, ${item.date}`}
-                </Text>
-            </View>
+            <Card containerStyle={styles.cardContainer}>
+                <Card.Image source={campsite.image}>
+                    <View style={{ justifyContent: 'center', flex: 1 }}>
+                        <Text
+                            style={{
+                                color: 'white',
+                                textAlign: 'center',
+                                fontSize: 20
+                            }}
+                        >
+                            {campsite.name}
+                        </Text>
+                    </View>
+                </Card.Image>
+                <Text style={{ margin: 20 }}>{campsite.description}</Text>
+                <Icon
+                    name={props.isFavorite ? 'heart' : 'heart-o'}
+                    type='font-awesome'
+                    color='#f50'
+                    raised
+                    reverse
+                    onPress={() =>
+                        props.isFavorite
+                            ? console.log('Already set as a favorite')
+                            : props.markFavorite()
+                    }
+                />
+            </Card>
         );
-    };
-
-    return (
-        <FlatList
-            data={comments.filter(
-                (comment) => comment.campsiteId === campsite.id
-            )}
-            renderItem={renderCommentItem}
-            keyExtractor={(item) => item.id.toString()}
-            contentContainerStyle={{
-                marginHorizontal: 20,
-                paddingVertical: 20
-            }}
-            ListHeaderComponent={
-                <>
-                    <RenderCampsite
-                        campsite={campsite}
-                        isFavorite={favorite}
-                        markFavorite={() => setFavorite(true)}
-                    />
-                    <Text style={styles.commentsTitle}>Comments</Text>
-                </>
-            }
-        />
-    );
+    }
+    return <View />;
 };
 
 const styles = StyleSheet.create({
-    commentsTitle: {
-        textAlign: 'center',
-        backgroundColor: '#fff',
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#43484D',
-        padding: 10,
-        paddingTop: 30
-    },
-    commentItem: {
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        backgroundColor: '#fff'
+    cardContainer: {
+        padding: 0,
+        margin: 0,
+        marginBottom: 20
     }
 });
 
-export default CampsiteInfoScreen;
+export default RenderCampsite;
